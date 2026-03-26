@@ -22,6 +22,7 @@ export const register = async (data: RegisterRequest) => {
   },
 });
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password: _, ...userWithoutPassword } = user;
   return userWithoutPassword;
 };
@@ -45,6 +46,7 @@ export const login = async (data: LoginRequest) => {
     data: { token: refreshToken, userId: user.id, expiresAt },
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const { password: _, ...userWithoutPassword } = user;
   return { accessToken, refreshToken, user: userWithoutPassword };
 };

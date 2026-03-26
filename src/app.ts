@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import authRoutes from './routes/auth.routes';
 
 const app = express();
 
@@ -15,8 +16,7 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 
-// Routes (à brancher ici plus tard)
-// import assetRoutes from './routes/assets.js';
-// app.use('/api/assets', assetRoutes);
+// Routes
+app.use('/api/auth', authRoutes);
 
 export default app;

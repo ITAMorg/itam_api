@@ -60,7 +60,7 @@ export const createAsset = async (dto: CreateAssetDto, userId: number) => {
       brand: dto.brand,
       model: dto.model,
       status: dto.status ?? $Enums.AssetStatus.IN_STOCK,
-      purchaseDate: dto.purchaseDate ? new Date(dto.purchaseDate) : null,
+      purchaseDate: dto.purchaseDate ? new Date(dto.purchaseDate) : new Date(),
       warrantyEnd: dto.warrantyEnd ? new Date(dto.warrantyEnd) : null,
       typeId: dto.typeId,
       supplierId: dto.supplierId,
@@ -94,14 +94,14 @@ export const updateAsset = async (id: number, dto: UpdateAssetDto, userId: numbe
       ...(dto.model !== undefined && { model: dto.model }),
       ...(dto.status && { status: dto.status }),
       ...(dto.purchaseDate !== undefined && {
-        purchaseDate: dto.purchaseDate ? new Date(dto.purchaseDate) : null,
+        purchaseDate: dto.purchaseDate ? new Date(dto.purchaseDate) : new Date(),
       }),
       ...(dto.warrantyEnd !== undefined && {
         warrantyEnd: dto.warrantyEnd ? new Date(dto.warrantyEnd) : null,
       }),
       ...(dto.typeId && { typeId: dto.typeId }),
-      ...(dto.supplierId !== undefined && { supplierId: dto.supplierId }),
-      ...(dto.locationId !== undefined && { locationId: dto.locationId }),
+      ...(dto.supplierId !== undefined && { supplierId: dto.supplierId ?? null }),
+      ...(dto.locationId !== undefined && { locationId: dto.locationId ?? null }),
     },
     include: assetInclude,
   });

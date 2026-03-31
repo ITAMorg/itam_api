@@ -73,9 +73,11 @@ model Supplier {
 // ─── AssetType ───────────────────────────────────────────────────────────────
 
 model AssetType {
-  id     Int     @id @default(autoincrement())
-  name   String  @unique
-  assets Asset[]
+  id       Int     @id @default(autoincrement())
+  name     String  @unique
+  iconKey  String  @default("devices")
+  colorKey String  @default("1D4ED8")
+  assets   Asset[]
 }
 
 // ─── Asset ───────────────────────────────────────────────────────────────────
@@ -87,7 +89,7 @@ model Asset {
   brand        String?
   model        String?
   status       AssetStatus      @default(IN_STOCK)
-  purchaseDate DateTime?
+  purchaseDate DateTime @default(now())
   warrantyEnd  DateTime?
   typeId       Int
   type         AssetType        @relation(fields: [typeId], references: [id])

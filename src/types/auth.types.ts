@@ -2,6 +2,7 @@ export interface JwtPayload {
   userId: number;
   email: string;
   role: string;
+  locationId?: number | null;
 }
 
 export interface LoginRequest {

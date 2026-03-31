@@ -34,7 +34,7 @@ export const login = async (data: LoginRequest) => {
   const valid = await bcrypt.compare(data.password, user.password);
   if (!valid) throw new Error('Invalid credentials');
 
-  const payload: JwtPayload = { userId: user.id, email: user.email, role: user.role };
+  const payload: JwtPayload = { userId: user.id, email: user.email, role: user.role, locationId: user.locationId, };
 
   const accessToken = jwt.sign(payload, ACCESS_SECRET, { expiresIn: ACCESS_EXPIRES_IN } as jwt.SignOptions);
   const refreshToken = jwt.sign(payload, REFRESH_SECRET, { expiresIn: REFRESH_EXPIRES_IN } as jwt.SignOptions);

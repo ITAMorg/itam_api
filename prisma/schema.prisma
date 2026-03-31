@@ -7,17 +7,36 @@ datasource db {
   provider = "postgresql"
 }
 
+// ─── Enums ───────────────────────────────────────────────────────────────────
+
+enum Role {
+  ADMIN
+  TECHNICIAN
+  USER
+}
+
+enum AssetStatus {
+  IN_SERVICE
+  BROKEN
+  IN_STOCK
+}
+
+// ─── Auth ────────────────────────────────────────────────────────────────────
+
 model User {
-  id            Int            @id @default(autoincrement())
-  email         String         @unique
+  id            Int             @id @default(autoincrement())
+  email         String          @unique
   password      String
   firstName     String
   lastName      String
-  role          Role           @default(USER)
-  isActive      Boolean        @default(true)
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  role          Role            @default(USER)
+  isActive      Boolean         @default(true)
+  locationId    Int?
+  location      Location?       @relation(fields: [locationId], references: [id])
+  createdAt     DateTime        @default(now())
+  updatedAt     DateTime        @updatedAt
   refreshTokens RefreshToken[]
+  assetHistory  AssetLifecycle[]
 }
 
 model RefreshToken {
@@ -29,8 +48,67 @@ model RefreshToken {
   createdAt DateTime @default(now())
 }
 
-enum Role {
-  ADMIN
-  USER
-  READONLY
+// ─── Location ────────────────────────────────────────────────────────────────
+
+model Location {
+  id       Int     @id @default(autoincrement())
+  name     String
+  building String
+  floor    Int
+  users    User[]
+  assets   Asset[]
+}
+
+// ─── Supplier ────────────────────────────────────────────────────────────────
+
+model Supplier {
+  id           Int     @id @default(autoincrement())
+  name         String
+  contactEmail String?
+  contactPhone String?
+  address      String?
+  assets       Asset[]
+}
+
+// ─── AssetType ───────────────────────────────────────────────────────────────
+
+model AssetType {
+  id     Int     @id @default(autoincrement())
+  name   String  @unique
+  assets Asset[]
+}
+
+// ─── Asset ───────────────────────────────────────────────────────────────────
+
+model Asset {
+  id           Int              @id @default(autoincrement())
+  name         String
+  serialNumber String?          @unique
+  brand        String?
+  model        String?
+  status       AssetStatus      @default(IN_STOCK)
+  purchaseDate DateTime?
+  warrantyEnd  DateTime?
+  typeId       Int
+  type         AssetType        @relation(fields: [typeId], references: [id])
+  supplierId   Int?
+  supplier     Supplier?        @relation(fields: [supplierId], references: [id])
+  locationId   Int?
+  location     Location?        @relation(fields: [locationId], references: [id])
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  history      AssetLifecycle[]
+}
+
+// ─── AssetLifecycle ──────────────────────────────────────────────────────────
+
+model AssetLifecycle {
+  id         Int         @id @default(autoincrement())
+  assetId    Int
+  asset      Asset       @relation(fields: [assetId], references: [id], onDelete: Cascade)
+  userId     Int?
+  user       User?       @relation(fields: [userId], references: [id])
+  event      String
+  note       String?
+  createdAt  DateTime    @default(now())
 }

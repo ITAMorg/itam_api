@@ -24,19 +24,23 @@ enum AssetStatus {
 // ─── Auth ────────────────────────────────────────────────────────────────────
 
 model User {
-  id            Int             @id @default(autoincrement())
-  email         String          @unique
-  password      String
-  firstName     String
-  lastName      String
-  role          Role            @default(USER)
-  isActive      Boolean         @default(true)
-  locationId    Int?
-  location      Location?       @relation(fields: [locationId], references: [id])
-  createdAt     DateTime        @default(now())
-  updatedAt     DateTime        @updatedAt
-  refreshTokens RefreshToken[]
-  assetHistory  AssetLifecycle[]
+  id                  Int             @id @default(autoincrement())
+  email               String          @unique
+  password            String
+  firstName           String
+  lastName            String
+  role                Role            @default(USER)
+  isActive            Boolean         @default(true)
+  locationId          Int?
+  location            Location?       @relation(fields: [locationId], references: [id])
+  createdAt           DateTime        @default(now())
+  updatedAt           DateTime        @updatedAt
+  refreshTokens       RefreshToken[]
+  assetHistory        AssetLifecycle[]
+  ticketsCreated      Ticket[]        @relation("TicketRequester")
+  ticketsAssigned     Ticket[]        @relation("TicketAssignee")
+  ticketComments      TicketComment[]
+  attachmentsUploaded TicketAttachment[]
 }
 
 model RefreshToken {
@@ -100,6 +104,7 @@ model Asset {
   createdAt    DateTime         @default(now())
   updatedAt    DateTime         @updatedAt
   history      AssetLifecycle[]
+  tickets      Ticket[]
 }
 
 // ─── AssetLifecycle ──────────────────────────────────────────────────────────
@@ -113,4 +118,78 @@ model AssetLifecycle {
   event      String
   note       String?
   createdAt  DateTime    @default(now())
+}
+
+// ─── Enums Ticket ─────────────────────────────────────────────────────────────
+
+enum TicketStatus {
+  OPEN
+  IN_PROGRESS
+  ON_HOLD
+  RESOLVED
+  CLOSED
+}
+
+enum TicketPriority {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum TicketType {
+  INCIDENT
+  REQUEST
+}
+
+// ─── Ticket ───────────────────────────────────────────────────────────────────
+
+model Ticket {
+  id          Int            @id @default(autoincrement())
+  reference   String         @unique
+  type        TicketType     @default(INCIDENT)
+  status      TicketStatus   @default(OPEN)
+  priority    TicketPriority @default(MEDIUM)
+  title       String
+  description String?
+  requesterId Int
+  requester   User           @relation("TicketRequester", fields: [requesterId], references: [id])
+  assigneeId  Int?
+  assignee    User?          @relation("TicketAssignee", fields: [assigneeId], references: [id])
+  assetId     Int?
+  asset       Asset?         @relation(fields: [assetId], references: [id])
+  dueDate     DateTime?
+  resolvedAt  DateTime?
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  comments    TicketComment[]
+  attachments TicketAttachment[]
+}
+
+// ─── TicketComment ────────────────────────────────────────────────────────────
+
+model TicketComment {
+  id        Int      @id @default(autoincrement())
+  ticketId  Int
+  ticket    Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  authorId  Int
+  author    User     @relation(fields: [authorId], references: [id])
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ─── TicketAttachment ─────────────────────────────────────────────────────────
+
+model TicketAttachment {
+  id           Int      @id @default(autoincrement())
+  ticketId     Int
+  ticket       Ticket   @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  uploadedById Int
+  uploadedBy   User     @relation(fields: [uploadedById], references: [id])
+  filename     String
+  url          String
+  mimeType     String
+  sizeBytes    Int?
+  createdAt    DateTime @default(now())
 }

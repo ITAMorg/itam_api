@@ -7,14 +7,21 @@ export const getTickets = async (req: AuthRequest, res: Response): Promise<void>
   try {
     const { status, priority, type, assigneeId, requesterId, assetId } = req.query;
 
-    const tickets = await ticketService.getTickets({
+    const tickets = await ticketService.getTickets(
+      {
       status: status as $Enums.TicketStatus | undefined,
       priority: priority as $Enums.TicketPriority | undefined,
       type: type as $Enums.TicketType | undefined,
       assigneeId: assigneeId ? Number(assigneeId) : undefined,
       requesterId: requesterId ? Number(requesterId) : undefined,
       assetId: assetId ? Number(assetId) : undefined,
-    });
+    },
+    { 
+      userId: req.user!.userId, 
+      role: req.user!.role, 
+      locationId: req.user!.locationId ?? undefined,
+    }
+  );
 
     res.json(tickets);
   } catch {

@@ -31,11 +31,21 @@ function generateReference(): string {
   return `TKT-${year}-${random}`;
 }
 
-export const getTickets = async (filters: TicketFilters) => {
+export const getTickets = async (filters: TicketFilters, currentUser: { userId: number ; role: string ; locationId?: number }) => {
   const { status, priority, type, assigneeId, requesterId, assetId } = filters;
+
+  const roleFilters =
+    currentUser.role === 'USER'
+      ? {
+        asset: { 
+          locationId: currentUser.locationId ?? -1,
+        },
+      }
+      : {};
 
   return prisma.ticket.findMany({
     where: {
+      ...roleFilters,
       ...(status && { status }),
       ...(priority && { priority }),
       ...(type && { type }),

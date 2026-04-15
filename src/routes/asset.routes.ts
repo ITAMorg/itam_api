@@ -1,14 +1,16 @@
 import { Router } from 'express';
 import * as assetController from '../controllers/asset.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
+import multer from 'multer';
 
+const upload = multer({ storage: multer.memoryStorage() });
 const router = Router();
-
 const ADMIN = 'ADMIN';
 const TECHNICIAN = 'TECHNICIAN';
 
 // Route pour générer un QR code pour un asset
 router.get('/:id/qrcode', authenticate, assetController.getAssetQrCode);
+router.post('/scan', authenticate, upload.single('image'), assetController.scanAssetQrCode);
 
 // Lecture — tous les rôles authentifiés
 router.get('/', authenticate, assetController.getAssets);

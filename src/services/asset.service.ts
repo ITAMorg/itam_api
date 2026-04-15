@@ -2,6 +2,23 @@ import prisma from '../config/prisma';
 import { $Enums } from '@prisma/client';
 import { CreateAssetDto, UpdateAssetDto, AssetFilters } from '../types/asset.types';
 import QRCode from 'qrcode';
+import { Jimp } from 'jimp';
+import jsQR from 'jsqr';
+
+export const decodeQrCodeFromBuffer = async (buffer: Buffer): Promise<number | null> => {
+  const image = await Jimp.read(buffer);
+  const { data, width, height } = image.bitmap;
+
+  const code = jsQR(new Uint8ClampedArray(data), width, height);
+  if (!code) return null;
+
+  const raw = code.data;
+  const uri = new URL(raw);
+  if (uri.protocol !== 'itam:' || uri.hostname !== 'assets') return null;
+
+  const id = Number(uri.pathname.replace('/', ''));
+  return isNaN(id) ? null : id;
+};
 
 const assetInclude = {
   type: true,

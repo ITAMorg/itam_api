@@ -7,6 +7,9 @@ const router = Router();
 const ADMIN = 'ADMIN';
 const TECHNICIAN = 'TECHNICIAN';
 
+// Route pour générer un QR code pour un asset
+router.get('/:id/qrcode', authenticate, assetController.getAssetQrCode);
+
 // Lecture — tous les rôles authentifiés
 router.get('/', authenticate, assetController.getAssets);
 router.get('/location/:locationId', authenticate, assetController.getAssetsByLocation);

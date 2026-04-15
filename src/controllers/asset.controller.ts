@@ -3,6 +3,27 @@ import { AuthRequest } from '../middleware/auth.middleware';
 import * as assetService from '../services/asset.service';
 import { $Enums } from '@prisma/client';
 
+export const getAssetQrCode = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const id = Number(req.params.id);
+    if (isNaN(id)) {
+      res.status(400).json({ message: 'ID invalide' });
+      return;
+    }
+
+    const buffer = await assetService.generateAssetQrCode(id);
+    if (!buffer) {
+      res.status(404).json({ message: 'Asset non trouvé' });
+      return;
+    }
+
+    res.setHeader('Content-Type', 'image/png');
+    res.send(buffer);
+  } catch {
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+};
+
 export const getAssets = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { status, typeId, supplierId, locationId, search } = req.query;

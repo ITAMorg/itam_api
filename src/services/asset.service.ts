@@ -1,11 +1,26 @@
 import prisma from '../config/prisma';
 import { $Enums } from '@prisma/client';
 import { CreateAssetDto, UpdateAssetDto, AssetFilters } from '../types/asset.types';
+import QRCode from 'qrcode';
 
 const assetInclude = {
   type: true,
   supplier: true,
   location: true,
+};
+
+export const generateAssetQrCode = async (id: number): Promise<Buffer | null> => {
+  const asset = await prisma.asset.findUnique({ where: { id } });
+  if (!asset) return null;
+
+  const content = `itam://assets/${id}`;
+  const buffer = await QRCode.toBuffer(content, {
+    type: 'png',
+    width: 300,
+    margin: 2,
+  });
+
+  return buffer;
 };
 
 export const getAssets = async (filters: AssetFilters) => {
@@ -139,3 +154,4 @@ export const deleteAsset = async (id: number, userId: number) => {
 
   return prisma.asset.delete({ where: { id } });
 };
+

@@ -80,6 +80,19 @@ export const getAssetById = async (id: number) => {
         orderBy: { createdAt: 'desc' },
         include: { user: { select: { id: true, firstName: true, lastName: true } } },
       },
+      tickets: {
+        orderBy: { createdAt: 'desc' },
+        take: 4,
+        select: {
+          id: true,
+          reference: true,
+          title: true,
+          status: true,
+          priority: true,
+          type: true,
+          createdAt: true,
+        },
+      },
     },
   });
 };
@@ -170,5 +183,13 @@ export const deleteAsset = async (id: number, userId: number) => {
   });
 
   return prisma.asset.delete({ where: { id } });
+};
+
+export const updateAssetLocation = async (assetId: number, locationId: number | null) => {
+  return prisma.asset.update({
+    where: { id: assetId },
+    data: { locationId },
+    include: { location: true },
+  });
 };
 

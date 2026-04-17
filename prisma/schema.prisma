@@ -18,6 +18,7 @@ enum Role {
 enum AssetStatus {
   IN_SERVICE
   BROKEN
+  MAINTENANCE
   IN_STOCK
 }
 

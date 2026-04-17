@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import * as assetController from '../controllers/asset.controller';
 import { authenticate, authorize } from '../middleware/auth.middleware';
+import { updateAssetLocation } from '../controllers/asset.controller';
 import multer from 'multer';
 
 const upload = multer({ storage: multer.memoryStorage() });
@@ -21,5 +22,8 @@ router.get('/:id', authenticate, assetController.getAssetById);
 router.post('/', authenticate, authorize(ADMIN, TECHNICIAN), assetController.createAsset);
 router.put('/:id', authenticate, authorize(ADMIN, TECHNICIAN), assetController.updateAsset);
 router.delete('/:id', authenticate, authorize(ADMIN), assetController.deleteAsset);
+
+// Location
+router.patch('/:id/location', authenticate, authorize('ADMIN', 'TECHNICIAN'), updateAssetLocation);
 
 export default router;

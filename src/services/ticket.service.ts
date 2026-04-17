@@ -55,6 +55,7 @@ export const getTickets = async (filters: TicketFilters, currentUser: { userId: 
     },
     include: ticketInclude,
     orderBy: { createdAt: 'desc' },
+    take: 100,
   });
 };
 
@@ -83,7 +84,10 @@ export const createTicket = async (dto: CreateTicketDto, requesterId: number) =>
 };
 
 export const updateTicket = async (id: number, dto: UpdateTicketDto) => {
-  const previous = await prisma.ticket.findUnique({ where: { id } });
+  const previous = await prisma.ticket.findUnique({
+    where: { id },
+    include: { asset: true },
+  });
   if (!previous) return null;
 
   const resolvedAt =
@@ -93,20 +97,57 @@ export const updateTicket = async (id: number, dto: UpdateTicketDto) => {
         ? null
         : undefined;
 
-  return prisma.ticket.update({
-    where: { id },
-    data: {
-      ...(dto.title && { title: dto.title }),
-      ...(dto.description !== undefined && { description: dto.description }),
-      ...(dto.status && { status: dto.status }),
-      ...(dto.priority && { priority: dto.priority }),
-      ...(dto.assigneeId !== undefined && { assigneeId: dto.assigneeId ?? null }),
-      ...(dto.dueDate !== undefined && {
-        dueDate: dto.dueDate ? new Date(dto.dueDate) : null,
-      }),
-      ...(resolvedAt !== undefined && { resolvedAt }),
-    },
-    include: ticketInclude,
+  // Logique de changement de statut asset
+  let newAssetStatus: $Enums.AssetStatus | null = null;
+
+  if (dto.status && previous.assetId) {
+    const wasActive =
+      previous.status === $Enums.TicketStatus.OPEN ||
+      previous.status === $Enums.TicketStatus.IN_PROGRESS;
+
+    if (dto.status === $Enums.TicketStatus.IN_PROGRESS) {
+      newAssetStatus = $Enums.AssetStatus.MAINTENANCE;
+    } else if (
+      dto.status === $Enums.TicketStatus.RESOLVED ||
+      dto.status === $Enums.TicketStatus.CLOSED
+    ) {
+      newAssetStatus = $Enums.AssetStatus.IN_SERVICE;
+    } else if (dto.status === $Enums.TicketStatus.OPEN && !wasActive) {
+      // Réouverture d'un ticket
+      const isCritical =
+        previous.priority === $Enums.TicketPriority.CRITICAL ||
+        previous.priority === $Enums.TicketPriority.HIGH;
+      newAssetStatus = isCritical
+        ? $Enums.AssetStatus.BROKEN
+        : $Enums.AssetStatus.MAINTENANCE;
+    }
+  }
+
+  return prisma.$transaction(async (tx) => {
+    const ticket = await tx.ticket.update({
+      where: { id },
+      data: {
+        ...(dto.title && { title: dto.title }),
+        ...(dto.description !== undefined && { description: dto.description }),
+        ...(dto.status && { status: dto.status }),
+        ...(dto.priority && { priority: dto.priority }),
+        ...(dto.assigneeId !== undefined && { assigneeId: dto.assigneeId ?? null }),
+        ...(dto.dueDate !== undefined && {
+          dueDate: dto.dueDate ? new Date(dto.dueDate) : null,
+        }),
+        ...(resolvedAt !== undefined && { resolvedAt }),
+      },
+      include: ticketInclude,
+    });
+
+    if (newAssetStatus && previous.assetId) {
+      await tx.asset.update({
+        where: { id: previous.assetId },
+        data: { status: newAssetStatus },
+      });
+    }
+
+    return ticket;
   });
 };
 
@@ -131,17 +172,36 @@ export const addTicketAction = async (
   authorId: number,
   dto: CreateTicketActionDto,
 ) => {
-  const ticket = await prisma.ticket.findUnique({ where: { id: ticketId } });
+  const ticket = await prisma.ticket.findUnique({
+    where: { id: ticketId },
+    include: { _count: { select: { comments: true } } },
+  });
   if (!ticket) return null;
 
-  return prisma.ticketComment.create({
-    data: {
-      ticketId,
-      authorId,
-      content: dto.content,
-    },
-    include: {
-      author: { select: { id: true, firstName: true, lastName: true } },
-    },
+  return prisma.$transaction(async (tx) => {
+    const comment = await tx.ticketComment.create({
+      data: { ticketId, authorId, content: dto.content },
+      include: {
+        author: { select: { id: true, firstName: true, lastName: true } },
+      },
+    });
+
+    // Premier commentaire → passage automatique en IN_PROGRESS
+    if (ticket.status === $Enums.TicketStatus.OPEN && ticket._count.comments === 0) {
+      await tx.ticket.update({
+        where: { id: ticketId },
+        data: { status: $Enums.TicketStatus.IN_PROGRESS },
+      });
+
+      // Mise à jour statut asset si lié
+      if (ticket.assetId) {
+        await tx.asset.update({
+          where: { id: ticket.assetId },
+          data: { status: $Enums.AssetStatus.MAINTENANCE },
+        });
+      }
+    }
+
+    return comment;
   });
 };

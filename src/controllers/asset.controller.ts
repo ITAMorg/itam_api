@@ -53,12 +53,21 @@ export const getAssetQrCode = async (req: AuthRequest, res: Response): Promise<v
 export const getAssets = async (req: AuthRequest, res: Response): Promise<void> => {
   try {
     const { status, typeId, supplierId, locationId, search } = req.query;
+    const user = req.user!;
+
+    // Un USER ne voit que les assets de sa location
+    const forcedLocationId =
+      user.role === 'USER'
+        ? user.locationId ?? -1  // -1 → aucun résultat si pas de location
+        : locationId
+          ? Number(locationId)
+          : undefined;
 
     const assets = await assetService.getAssets({
       status: status as $Enums.AssetStatus | undefined,
       typeId: typeId ? Number(typeId) : undefined,
       supplierId: supplierId ? Number(supplierId) : undefined,
-      locationId: locationId ? Number(locationId) : undefined,
+      locationId: forcedLocationId,
       search: search as string | undefined,
     });
 
@@ -152,6 +161,25 @@ export const deleteAsset = async (req: AuthRequest, res: Response): Promise<void
     }
 
     res.status(204).send();
+  } catch {
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+};
+
+export const updateAssetLocation = async (req: AuthRequest, res: Response): Promise<void> => {
+  try {
+    const id = Number(req.params.id);
+    if (isNaN(id)) {
+      res.status(400).json({ message: 'ID invalide' });
+      return;
+    }
+    const { locationId } = req.body;
+    const asset = await assetService.updateAssetLocation(id, locationId ?? null);
+    if (!asset) {
+      res.status(404).json({ message: 'Asset non trouvé' });
+      return;
+    }
+    res.json(asset);
   } catch {
     res.status(500).json({ message: 'Erreur serveur' });
   }

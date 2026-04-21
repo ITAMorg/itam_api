@@ -82,7 +82,7 @@ export const getAssetById = async (id: number) => {
       },
       tickets: {
         orderBy: { createdAt: 'desc' },
-        take: 4,
+        take: 10,
         select: {
           id: true,
           reference: true,

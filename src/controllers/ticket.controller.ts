@@ -24,7 +24,8 @@ export const getTickets = async (req: AuthRequest, res: Response): Promise<void>
   );
 
     res.json(tickets);
-  } catch {
+  } catch(error) {
+    console.error('getTickets error:', error);
     res.status(500).json({ message: 'Erreur serveur' });
   }
 };

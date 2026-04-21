@@ -10,7 +10,14 @@ const ticketInclude = {
     select: { id: true, firstName: true, lastName: true, email: true },
   },
   asset: {
-    select: { id: true, name: true, brand: true, model: true, serialNumber: true },
+    select: { id: true, name: true, brand: true, model: true, serialNumber: true, 
+      type: {
+          select: {
+            iconKey: true,
+            colorKey: true,
+          },
+      }, 
+    },
   },
   comments: {
     include: {

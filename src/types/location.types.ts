@@ -3,3 +3,9 @@ export interface CreateLocationDto {
   building: string;
   floor: number;
 }
+
+export interface UpdateLocationDto {
+  name?: string;
+  building?: string;
+  floor?: number;
+}

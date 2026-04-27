@@ -1,5 +1,5 @@
 import prisma from '../config/prisma';
-import { CreateSupplierDto, UpdateSupplierDto } from '../types/supplier';
+import { CreateSupplierDto, UpdateSupplierDto } from '../types/supplier.types';
 
 export const getSuppliers = async () => {
   return prisma.supplier.findMany({

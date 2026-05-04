@@ -9,6 +9,7 @@ import userRoutes from './routes/user.routes';
 import locationRoutes from './routes/location.routes';
 import supplierRouter from './routes/supplier.routes';
 import assetTypeRouter from './routes/asset_type.routes';
+import statsRouter from './routes/stats.routes';
 
 const app = express();
 
@@ -31,5 +32,6 @@ app.use('/api/users', userRoutes);
 app.use('/api/locations', locationRoutes);
 app.use('/api/suppliers', supplierRouter);
 app.use('/api/asset-types', assetTypeRouter);
+app.use('/api/stats', statsRouter);
 
 export default app;

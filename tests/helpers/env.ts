@@ -1,24 +1,25 @@
 import * as dotenv from 'dotenv';
 import * as path from 'path';
 
-// Charge les variables d'environnement depuis .env.test
-// Ce fichier est exécuté par Jest AVANT tout autre import (voir setupFiles dans jest.config.ts)
-// Objectif : garantir que DATABASE_URL pointe sur itam_test et non itam_dev
+// Charge .env.test uniquement si le fichier existe (utile en local, ignoré en CI)
+// En CI, les variables sont injectées directement par le workflow GitHub Actions.
 dotenv.config({
   path: path.resolve(__dirname, '../../.env.test'),
 });
 
-// Vérification défensive : si .env.test n'a pas été trouvé, on crashe immédiatement
-// plutôt que de risquer de polluer la BDD de dev avec des tests
-if (!process.env.DATABASE_URL || !process.env.DATABASE_URL.includes('itam_test')) {
+// Vérification défensive : DATABASE_URL doit pointer sur une base de TEST
+// (nom contenant "test") pour éviter d'écraser accidentellement la BDD de dev/prod.
+if (!process.env.DATABASE_URL || !process.env.DATABASE_URL.includes('test')) {
   throw new Error(
-    '❌ Configuration de test invalide : DATABASE_URL doit pointer sur itam_test. ' +
-    'Vérifie que .env.test existe à la racine et contient DATABASE_URL avec "itam_test".'
+    '❌ Configuration de test invalide : DATABASE_URL doit pointer sur une base de test ' +
+    '(le nom de la base doit contenir "test"). ' +
+    'En local : vérifie que .env.test existe et pointe sur itam_test. ' +
+    'En CI : vérifie que les env vars sont injectées par le workflow.'
   );
 }
 
 if (process.env.NODE_ENV !== 'test') {
   throw new Error(
-    '❌ NODE_ENV doit être "test" pour lancer les tests. Vérifie .env.test.'
+    '❌ NODE_ENV doit être "test" pour lancer les tests.'
   );
 }

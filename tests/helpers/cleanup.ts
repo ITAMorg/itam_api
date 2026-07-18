@@ -11,14 +11,14 @@ import { prismaTest } from './prisma';
  *  - RESTART IDENTITY : réinitialise les séquences auto-increment
  *  - CASCADE    : gère automatiquement les FK sans se soucier de l'ordre
  *
- * Garde-fou : refuse de tourner si DATABASE_URL ne pointe pas sur itam_test.
+ * Garde-fou : refuse de tourner si DATABASE_URL ne pointe pas sur test.
  * Triple protection après env.ts et setup.ts — on ne veut PAS truncater
  * accidentellement la BDD de dev.
  */
 export async function cleanDatabase(): Promise<void> {
-  if (!process.env.DATABASE_URL?.includes('itam_test')) {
+  if (!process.env.DATABASE_URL?.includes('test')) {
     throw new Error(
-      '❌ cleanDatabase : refus de truncater — DATABASE_URL ne cible pas itam_test.'
+      '❌ cleanDatabase : refus de truncater — DATABASE_URL ne cible pas test.'
     );
   }
 

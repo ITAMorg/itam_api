@@ -19,14 +19,14 @@ export default async function globalSetup(): Promise<void> {
     path: path.resolve(__dirname, '../../.env.test'),
   });
 
-  // Garde-fou critique : impossible de continuer si on ne cible pas itam_test
-  if (!process.env.DATABASE_URL?.includes('itam_test')) {
+  // Garde-fou critique : impossible de continuer si on ne cible pas test
+  if (!process.env.DATABASE_URL?.includes('test')) {
     throw new Error(
-      '❌ globalSetup : DATABASE_URL ne pointe pas sur itam_test. Abandon.'
+      '❌ globalSetup : DATABASE_URL ne pointe pas sur test. Abandon.'
     );
   }
 
-  console.log('\n🔧 [Test Setup] Application des migrations Prisma sur itam_test...');
+  console.log('\n🔧 [Test Setup] Application des migrations Prisma sur test...');
 
   try {
     // migrate deploy applique toutes les migrations existantes en mode idempotent

@@ -5,11 +5,16 @@ Toutes les modifications notables apportées à ce projet sont documentées dans
 Le format est basé sur [Keep a Changelog](https://keepachangelog.com/fr/1.1.0/),
 et ce projet adhère au [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2026-05-04
+## [1.0.0] - 2026-07-18
 
 ### Ajouté
 - Version finale destinée au dossier RNCP.
 - Correction de la logique métier sur la gestion des tickets (transitions d'état, filtrage).
+- Suite de 35 tests d'intégration (Jest + Supertest) sur une base PostgreSQL dédiée `itam_test` :
+  - 11 tests d'authentification (register, login, refresh, logout, révocation)
+  - 12 tests sur les assets (RBAC par location, permissions par rôle, traçabilité lifecycle)
+  - 12 tests sur les tickets (filtrage RBAC via relation asset, transitions métier automatisées)
+- Infrastructure de test : setup Prisma automatisé, isolation transactionnelle par TRUNCATE, factories réutilisables.
 
 ### Modifié
 - Ajustements sur la cohérence des statuts de tickets et l'affichage des historiques.

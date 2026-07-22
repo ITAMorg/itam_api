@@ -3,6 +3,7 @@ name: CI
 on:
   push:
     branches: [main, develop]
+    tags: ['v*']
   pull_request:
     branches: [main, develop]
 
@@ -66,9 +67,9 @@ jobs:
         run: npm run build
 
       - name: Upload build artifact
-        if: github.ref == 'refs/heads/main'
+        if: startsWith(github.ref, 'refs/tags/v')
         uses: actions/upload-artifact@v4
         with:
-          name: itam-api-dist-${{ github.sha }}
+          name: itam-api-dist-${{ github.ref_name }}
           path: dist/
-          retention-days: 30
+          retention-days: 90

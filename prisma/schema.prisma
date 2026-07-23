@@ -7,6 +7,11 @@ datasource db {
   provider = "postgresql"
 }
 
+generator erd {
+  provider = "prisma-erd-generator"
+  output   = "../docs/erd.svg"
+}
+
 // ─── Enums ───────────────────────────────────────────────────────────────────
 
 enum Role {
@@ -126,7 +131,6 @@ model AssetLifecycle {
 enum TicketStatus {
   OPEN
   IN_PROGRESS
-  ON_HOLD
   RESOLVED
   CLOSED
 }
@@ -135,7 +139,6 @@ enum TicketPriority {
   LOW
   MEDIUM
   HIGH
-  CRITICAL
 }
 
 enum TicketType {

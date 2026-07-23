@@ -1,0 +1,16 @@
+meta {
+  name: asset_getOne
+  type: http
+  seq: 6
+}
+
+get {
+  url: {{asset}}/2
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

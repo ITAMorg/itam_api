@@ -1,0 +1,16 @@
+meta {
+  name: qr_get
+  type: http
+  seq: 17
+}
+
+get {
+  url: {{asset}}/2/qrcode
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

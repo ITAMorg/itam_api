@@ -177,6 +177,24 @@ describe('Auth API', () => {
       expect(response.status).toBe(401);
       expect(response.body).toHaveProperty('message', 'Invalid credentials');
     });
+
+    it('ne permet pas de distinguer un email inexistant d\'un mot de passe erroné', async () => {
+      await createTestUser({
+        email: 'existe@test.local',
+        password: 'BonMotDePasse123',
+      });
+
+      const mauvaisMotDePasse = await request(app)
+        .post('/api/auth/login')
+        .send({ email: 'existe@test.local', password: 'MauvaisMotDePasse' });
+
+      const emailInexistant = await request(app)
+        .post('/api/auth/login')
+        .send({ email: 'inconnu@test.local', password: 'BonMotDePasse123' });
+
+      expect(mauvaisMotDePasse.status).toBe(emailInexistant.status);
+      expect(mauvaisMotDePasse.body).toEqual(emailInexistant.body);
+    });
   });
 
   // ─── POST /api/auth/refresh ────────────────────────────────────────────────
@@ -278,4 +296,21 @@ describe('Auth API', () => {
       expect(refreshResponse.status).toBe(401);
     });
   });
+
+  it('un compte désactivé ne peut pas se connecter (OWASP A07)', async () => {
+      await createTestUser({
+        email: 'inactif@test.local',
+        password: 'Pass123',
+        role: 'USER',
+        isActive: false,
+      });
+
+      const response = await request(app)
+        .post('/api/auth/login')
+        .send({ email: 'inactif@test.local', password: 'Pass123' });
+
+      expect(response.status).toBe(401);
+      // Le message ne distingue pas un compte désactivé d'un mot de passe erroné
+      expect(response.body.message).toBe('Invalid credentials');
+    });
 });

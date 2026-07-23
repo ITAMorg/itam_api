@@ -1,0 +1,16 @@
+meta {
+  name: ticket_getOne
+  type: http
+  seq: 13
+}
+
+get {
+  url: {{ticket}}/2
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

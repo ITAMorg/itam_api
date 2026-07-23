@@ -1,0 +1,16 @@
+meta {
+  name: ticket_getAll
+  type: http
+  seq: 11
+}
+
+get {
+  url: {{ticket}}
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

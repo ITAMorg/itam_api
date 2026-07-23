@@ -1,0 +1,22 @@
+meta {
+  name: asset_affectLocation
+  type: http
+  seq: 23
+}
+
+patch {
+  url: {{asset}}/2/location
+  body: json
+  auth: inherit
+}
+
+body:json {
+  { 
+    "locationId": 1 
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

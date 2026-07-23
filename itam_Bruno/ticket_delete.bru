@@ -1,0 +1,16 @@
+meta {
+  name: ticket_delete
+  type: http
+  seq: 17
+}
+
+delete {
+  url: {{ticket}}/1
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

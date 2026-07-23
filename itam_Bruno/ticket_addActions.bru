@@ -1,0 +1,22 @@
+meta {
+  name: ticket_addActions
+  type: http
+  seq: 21
+}
+
+post {
+  url: {{ticket}}/5/actions
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "content": "J'en discute avec mon équipe tkt"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

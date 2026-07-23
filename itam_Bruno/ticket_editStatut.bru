@@ -1,0 +1,22 @@
+meta {
+  name: ticket_editStatut
+  type: http
+  seq: 15
+}
+
+patch {
+  url: {{ticket}}/2
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "resolvedAt": "2026-03-01T00:00:00.000Z"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,24 @@
+meta {
+  name: qr_decode
+  type: http
+  seq: 18
+}
+
+post {
+  url: {{asset}}/scan
+  body: multipartForm
+  auth: inherit
+}
+
+body:multipart-form {
+  image: @file(C:\Users\P'titePatate\Downloads\qrcode_asset_2.png) @contentType(image/png)
+}
+
+body:file {
+  file: @file(C:\Users\P'titePatate\Downloads\qrcode_asset_2.png) @contentType(image/png)
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

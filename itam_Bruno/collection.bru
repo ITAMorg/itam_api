@@ -1,0 +1,17 @@
+auth {
+  mode: bearer
+}
+
+auth:bearer {
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwicm9sZSI6IkFETUlOIiwibG9jYXRpb25JZCI6bnVsbCwiaWF0IjoxNzc3ODgwOTA0LCJleHAiOjE3Nzc4ODE4MDR9.5IiVL-HvKSBFdbUJ_WU5ARn70iPHXEPB4kTHdztveIg
+}
+
+vars:pre-request {
+  register: http://localhost:3000/api/auth/register
+  login: http://localhost:3000/api/auth/login
+  asset: http://localhost:3000/api/assets
+  ticket: http://localhost:3000/api/tickets
+  user: http://localhost:3000/api/users
+  location: http://localhost:3000/api/locations
+  stats: http://localhost:3000/api/stats
+}

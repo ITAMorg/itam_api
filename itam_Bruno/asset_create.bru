@@ -1,0 +1,31 @@
+meta {
+  name: asset_create
+  type: http
+  seq: 3
+}
+
+post {
+  url: {{asset}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "name": "Lenovo thinkpad I7",
+    "serialNumber": "SN-002-2024",
+    "brand": "LENOVO",
+    "model": "Thinkpad",
+    "status": "IN_STOCK",
+    "purchaseDate": "2024-01-15T00:00:00.000Z",
+    "warrantyEnd": "2027-01-15T00:00:00.000Z",
+    "typeId": 1,
+    "supplierId": null,
+    "locationId": null
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

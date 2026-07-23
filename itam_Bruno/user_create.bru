@@ -1,0 +1,26 @@
+meta {
+  name: user_create
+  type: http
+  seq: 24
+}
+
+post {
+  url: {{user}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "email": "user2@user.com",
+    "password": "user123",
+    "firstName": "User2",
+    "lastName": "User2",
+    "role": "USER"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -33,6 +33,8 @@ export const login = async (data: LoginRequest) => {
 
   const valid = await bcrypt.compare(data.password, user.password);
   if (!valid) throw new Error('Invalid credentials');
+  if (!user.isActive) throw new Error('Invalid credentials');
+
 
   const payload: JwtPayload = { userId: user.id, email: user.email, role: user.role, locationId: user.locationId, };
 
@@ -57,8 +59,11 @@ export const refresh = async (token: string) => {
 
   const payload = jwt.verify(token, REFRESH_SECRET) as JwtPayload;
 
+  const user = await prisma.user.findUnique({ where: { id: payload.userId } });
+  if (!user || !user.isActive) throw new Error('Invalid refresh token');
+
   const accessToken = jwt.sign(
-    { userId: payload.userId, email: payload.email, role: payload.role },
+    { userId: user.id, email: user.email, role: user.role, locationId: user.locationId },
     ACCESS_SECRET,
     { expiresIn: ACCESS_EXPIRES_IN } as jwt.SignOptions
   );

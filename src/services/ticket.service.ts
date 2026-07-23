@@ -121,14 +121,6 @@ export const updateTicket = async (id: number, dto: UpdateTicketDto) => {
       newAssetStatus = previous.asset?.locationId
         ? $Enums.AssetStatus.IN_SERVICE
         : $Enums.AssetStatus.IN_STOCK;
-    } else if (dto.status === $Enums.TicketStatus.OPEN && !wasActive) {
-      // Réouverture d'un ticket
-      const isCritical =
-        previous.priority === $Enums.TicketPriority.CRITICAL ||
-        previous.priority === $Enums.TicketPriority.HIGH;
-      newAssetStatus = isCritical
-        ? $Enums.AssetStatus.BROKEN
-        : $Enums.AssetStatus.MAINTENANCE;
     }
   }
 

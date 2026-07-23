@@ -1,0 +1,16 @@
+meta {
+  name: user_getByRole
+  type: http
+  seq: 16
+}
+
+get {
+  url: {{user}}/role/ADMIN
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

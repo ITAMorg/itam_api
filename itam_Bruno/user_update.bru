@@ -1,0 +1,22 @@
+meta {
+  name: user_update
+  type: http
+  seq: 26
+}
+
+put {
+  url: {{user}}/6
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "lastName": "updateTest"
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

@@ -1,0 +1,16 @@
+meta {
+  name: user_delete
+  type: http
+  seq: 28
+}
+
+delete {
+  url: {{user}}/6
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

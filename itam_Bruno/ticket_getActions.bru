@@ -1,0 +1,16 @@
+meta {
+  name: ticket_getActions
+  type: http
+  seq: 19
+}
+
+get {
+  url: {{ticket}}/2/actions
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

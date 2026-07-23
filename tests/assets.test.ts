@@ -272,6 +272,33 @@ beforeEach(async () => {
       expect(lifecycle).toHaveLength(1);
       expect(lifecycle[0].event).toBe('CREATED');
     });
+
+    it('refuse la création d\'un asset avec un numéro de série déjà utilisé', async () => {
+      const type = await createTestAssetType();
+      await createTestAsset({ typeId: type.id, serialNumber: 'SN-UNIQUE-001' });
+      await createTestUser({
+        email: 'admin@test.local',
+        password: 'AdminPass123',
+        role: 'ADMIN',
+      });
+      const token = await loginAs('admin@test.local', 'AdminPass123');
+
+      const response = await request(app)
+        .post('/api/assets')
+        .set('Authorization', `Bearer ${token}`)
+        .send({
+          name: 'Doublon',
+          serialNumber: 'SN-UNIQUE-001',
+          typeId: type.id,
+        });
+
+      expect(response.status).toBeGreaterThanOrEqual(400);
+
+      const assets = await prismaTest.asset.findMany({
+        where: { serialNumber: 'SN-UNIQUE-001' },
+      });
+      expect(assets).toHaveLength(1);
+    });
   });
 
   // ─── DELETE /api/assets/:id : permissions strictes ADMIN ───────────────────

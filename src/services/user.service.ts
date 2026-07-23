@@ -57,11 +57,17 @@ export const updateUser = async (
     isActive?: boolean;
   }
 ) => {
-  return prisma.user.update({
+  const user = await prisma.user.update({
     where: { id },
     data,
     select: userSelect,
   });
+
+  if (data.isActive === false) {
+    await prisma.refreshToken.deleteMany({ where: { userId: id } });
+  }
+
+  return user;
 };
 
 export const deleteUser = async (id: number) => {

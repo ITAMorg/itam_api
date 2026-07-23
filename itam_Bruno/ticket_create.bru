@@ -1,0 +1,28 @@
+meta {
+  name: ticket_create
+  type: http
+  seq: 9
+}
+
+post {
+  url: {{ticket}}
+  body: json
+  auth: inherit
+}
+
+body:json {
+  {
+    "title": "bof bof",
+    "description": "j'aimerais changer de pc...",
+    "type": "INCIDENT",
+    "priority": "LOW",
+    "assetId": 2,
+    "assigneeId": null,
+    "dueDate": null
+  }
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

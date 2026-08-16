@@ -51,6 +51,17 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Contrôle de vulnérabilité des dépendances tierces.
+      # Le pipeline échoue à partir du niveau "high", ce qui interdit
+      # la fusion d'une branche introduisant une vulnérabilité connue.
+      - name: Security audit
+        run: npm audit --audit-level=high
+
+      # Relevé des dépendances en retard de version. N'échoue jamais :
+      # la sortie sert de support à la revue mensuelle des dépendances.
+      - name: Check outdated dependencies
+        run: npm outdated || true
+
       - name: Generate Prisma Client
         run: npx prisma generate
 

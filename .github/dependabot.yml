@@ -1,0 +1,43 @@
+# Surveillance automatisée des dépendances
+version: 2
+
+updates:
+  # ─── Dépendances applicatives (npm) ──────────────────────────────────────
+  - package-ecosystem: "npm"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      day: "monday"
+      time: "08:00"
+      timezone: "Europe/Paris"
+    open-pull-requests-limit: 5
+    labels:
+      - "dependencies"
+      - "maintenance"
+    commit-message:
+      prefix: "chore(deps)"
+      prefix-development: "chore(deps-dev)"
+    groups:
+      production-patch-minor:
+        dependency-type: "production"
+        update-types:
+          - "minor"
+          - "patch"
+      development-patch-minor:
+        dependency-type: "development"
+        update-types:
+          - "minor"
+          - "patch"
+
+  # ─── Actions GitHub utilisées par la CI ──────────────────────────────────
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+      timezone: "Europe/Paris"
+    open-pull-requests-limit: 3
+    labels:
+      - "dependencies"
+      - "ci"
+    commit-message:
+      prefix: "chore(ci)"

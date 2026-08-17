@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import morgan from 'morgan';
+import { httpLogger } from './config/logger';
 import authRoutes from './routes/auth.routes';
 import assetRoutes from './routes/asset.routes';
 import ticketRoutes from './routes/ticket.routes';
@@ -15,9 +15,13 @@ const app = express();
 
 app.use(helmet());
 app.use(cors());
-app.use(morgan('dev'));
-app.use(express.json());
 
+// Journalisation structurée des requêtes HTTP.
+// Placé avant le parseur de corps afin que toute requête soit tracée,
+// y compris celles rejetées pour cause de charge utile malformée.
+app.use(httpLogger);
+
+app.use(express.json());
 
 // Health check
 app.get('/health', (req, res) => {

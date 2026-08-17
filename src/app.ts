@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { httpLogger } from './config/logger';
+import healthRoutes from './routes/health.routes';
 import authRoutes from './routes/auth.routes';
 import assetRoutes from './routes/asset.routes';
 import ticketRoutes from './routes/ticket.routes';
@@ -16,19 +17,15 @@ const app = express();
 app.use(helmet());
 app.use(cors());
 
-// Journalisation structurée des requêtes HTTP.
-// Placé avant le parseur de corps afin que toute requête soit tracée,
-// y compris celles rejetées pour cause de charge utile malformée.
+// Journalisation structurée des requêtes HTTP
 app.use(httpLogger);
 
 app.use(express.json());
 
-// Health check
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
-});
+// Sondes de supervision
+app.use(healthRoutes);
 
-// Routes
+// Routes applicatives
 app.use('/api/auth', authRoutes);
 app.use('/api/assets', assetRoutes);
 app.use('/api/tickets', ticketRoutes);

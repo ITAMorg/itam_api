@@ -91,7 +91,7 @@ describe('Auth API', () => {
         });
 
       expect(response.status).toBe(400);
-      expect(response.body).toHaveProperty('message', 'Email already in use');
+      expect(response.body.message).toMatch(/déjà utilisée/i);
     });
   });
 
@@ -163,7 +163,7 @@ describe('Auth API', () => {
         });
 
       expect(response.status).toBe(401);
-      expect(response.body).toHaveProperty('message', 'Invalid credentials');
+      expect(response.body.message).toMatch(/identifiants invalides/i);
     });
 
     it('refuse un login sur un email inexistant (401)', async () => {
@@ -175,7 +175,7 @@ describe('Auth API', () => {
         });
 
       expect(response.status).toBe(401);
-      expect(response.body).toHaveProperty('message', 'Invalid credentials');
+      expect(response.body.message).toMatch(/identifiants invalides/i);
     });
 
     it('ne permet pas de distinguer un email inexistant d\'un mot de passe erroné', async () => {
@@ -231,7 +231,7 @@ describe('Auth API', () => {
         .send({ refreshToken: 'token-inexistant-en-base' });
 
       expect(response.status).toBe(401);
-      expect(response.body).toHaveProperty('message', 'Invalid refresh token');
+      expect(response.body.message).toMatch(/jeton de rafraîchissement invalide/i);
     });
   });
 
@@ -310,7 +310,6 @@ describe('Auth API', () => {
         .send({ email: 'inactif@test.local', password: 'Pass123' });
 
       expect(response.status).toBe(401);
-      // Le message ne distingue pas un compte désactivé d'un mot de passe erroné
-      expect(response.body.message).toBe('Invalid credentials');
+      expect(response.body.message).toBe('Identifiants invalides.');
     });
 });

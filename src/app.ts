@@ -2,6 +2,11 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import { httpLogger } from './config/logger';
+import { metricsMiddleware } from './middleware/metrics.middleware';
+import {
+  notFoundHandler,
+  errorHandler,
+} from './middleware/error.middleware';
 import healthRoutes from './routes/health.routes';
 import authRoutes from './routes/auth.routes';
 import assetRoutes from './routes/asset.routes';
@@ -20,6 +25,9 @@ app.use(cors());
 // Journalisation structurée des requêtes HTTP
 app.use(httpLogger);
 
+// Mesure de latence et alimentation des compteurs
+app.use(metricsMiddleware);
+
 app.use(express.json());
 
 // Sondes de supervision
@@ -34,5 +42,9 @@ app.use('/api/locations', locationRoutes);
 app.use('/api/suppliers', supplierRouter);
 app.use('/api/asset-types', assetTypeRouter);
 app.use('/api/stats', statsRouter);
+
+// Traitement des erreurs
+app.use(notFoundHandler);
+app.use(errorHandler);
 
 export default app;

@@ -1,0 +1,16 @@
+meta {
+  name: get_health_ready
+  type: http
+  seq: 32
+}
+
+get {
+  url: {{health}}/ready
+  body: none
+  auth: inherit
+}
+
+settings {
+  encodeUrl: true
+  timeout: 0
+}

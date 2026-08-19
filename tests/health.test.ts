@@ -122,7 +122,12 @@ describe('Sondes de supervision', () => {
       const result = await checkDatabase();
 
       expect(result.status).toBe('down');
-      expect(result.error).toContain('délai');
+      expect(result.error?.toLowerCase()).toContain('délai');
+
+      const payload = JSON.stringify(result).toLowerCase();
+      expect(payload).not.toContain('prisma');
+      expect(payload).not.toContain('postgres');
+      expect(payload).not.toContain('5432');
     }, 10000);
   });
 });

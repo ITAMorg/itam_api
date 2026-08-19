@@ -1,0 +1,122 @@
+name: Anomalie
+description: Signaler un dysfonctionnement du système ITAM
+title: "[Anomalie] "
+labels: ["type:anomalie", "statut:a-qualifier"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Une anomalie ne peut être corrigée que si elle peut être reproduite.
+        Les champs marqués comme obligatoires conditionnent la qualification.
+
+  - type: dropdown
+    id: composant
+    attributes:
+      label: Composant concerné
+      description: Où le dysfonctionnement est constaté.
+      options:
+        - itam_api — API REST
+        - itam_app — Application mobile
+        - itam_web — Tableau de bord web
+        - Indéterminé
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severite
+    attributes:
+      label: Sévérité constatée
+      description: >
+        Évaluation initiale par le déclarant. Elle peut être révisée
+        lors de la qualification.
+      options:
+        - S1 — Bloquante — service inutilisable ou faille de sécurité
+        - S2 — Majeure — fonction essentielle indisponible, sans contournement
+        - S3 — Mineure — dysfonctionnement avec contournement possible
+        - S4 — Cosmétique — présentation, libellé, confort d'usage
+    validations:
+      required: true
+
+  - type: textarea
+    id: contexte
+    attributes:
+      label: Contexte
+      description: >
+        Ce qui était en cours au moment du constat, et quel rôle
+        utilisateur était actif.
+      placeholder: >
+        Un compte technicien a été désactivé depuis l'administration
+        pendant que sa session mobile était ouverte.
+    validations:
+      required: true
+
+  - type: textarea
+    id: environnement
+    attributes:
+      label: Environnement
+      description: >
+        Version du composant, système d'exploitation, terminal.
+        La version figure dans les notes de version du dépôt.
+      value: |
+        - Composant et version : 
+        - Système / terminal : 
+        - Rôle du compte utilisé : 
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Étapes de reproduction
+      description: >
+        Une action par ligne, numérotée, depuis un état de départ connu.
+        Une anomalie non reproductible ne peut pas être qualifiée.
+      value: |
+        1. 
+        2. 
+        3. 
+    validations:
+      required: true
+
+  - type: textarea
+    id: attendu
+    attributes:
+      label: Comportement attendu
+    validations:
+      required: true
+
+  - type: textarea
+    id: constate
+    attributes:
+      label: Comportement constaté
+    validations:
+      required: true
+
+  - type: input
+    id: correlation
+    attributes:
+      label: Identifiant de corrélation
+      description: >
+        Champ `requestId` retourné dans la réponse d'erreur. Il permet
+        de retrouver la ligne de journal correspondante sans reconstituer
+        le contexte à partir d'un horodatage.
+      placeholder: 22d2f643-1668-4223-ad79-e9c3c6497187
+
+  - type: textarea
+    id: elements
+    attributes:
+      label: Éléments joints
+      description: >
+        Capture, extrait de journal, charge utile de la réponse.
+        Le détail technique ne doit contenir aucun mot de passe ni jeton.
+
+  - type: dropdown
+    id: occurrence
+    attributes:
+      label: Fréquence d'occurrence
+      options:
+        - Systématique
+        - Intermittente
+        - Constatée une seule fois
+    validations:
+      required: true

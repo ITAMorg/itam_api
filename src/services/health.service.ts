@@ -109,20 +109,27 @@ export const checkDatabase = async (): Promise<DependencyCheck> => {
     }
 
     return { status, responseTimeMs };
-  } catch (error) {
+    } catch (error) {
     const responseTimeMs = Number(
       (process.hrtime.bigint() - startedAt) / 1_000_000n,
     );
-
-    const message =
-      error instanceof Error ? error.message : 'Erreur inconnue';
 
     logger.error(
       { err: error, responseTimeMs },
       'Base de données injoignable',
     );
 
-    return { status: 'down', responseTimeMs, error: message };
+    const isTimeout =
+      error instanceof Error &&
+      error.message.includes('délai de');
+
+    return {
+      status: 'down',
+      responseTimeMs,
+      error: isTimeout
+        ? 'Délai de réponse dépassé'
+        : 'Base de données injoignable',
+    };
   }
 };
 

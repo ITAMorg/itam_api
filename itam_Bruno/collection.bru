@@ -3,7 +3,7 @@ auth {
 }
 
 auth:bearer {
-  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwicm9sZSI6IkFETUlOIiwibG9jYXRpb25JZCI6bnVsbCwiaWF0IjoxNzc3ODgwOTA0LCJleHAiOjE3Nzc4ODE4MDR9.5IiVL-HvKSBFdbUJ_WU5ARn70iPHXEPB4kTHdztveIg
+  token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjEsImVtYWlsIjoiYWRtaW5AYWRtaW4uY29tIiwicm9sZSI6IkFETUlOIiwibG9jYXRpb25JZCI6bnVsbCwiaWF0IjoxNzg3MDk0NTU1LCJleHAiOjE3ODcwOTU0NTV9.ezLxFXdM9ULhSDnsnhlH9fCkEKb0W_FhFADmsPBemKc
 }
 
 vars:pre-request {
@@ -14,4 +14,6 @@ vars:pre-request {
   user: http://localhost:3000/api/users
   location: http://localhost:3000/api/locations
   stats: http://localhost:3000/api/stats
+  health: http://localhost:3000/health
+  metrics: http://localhost:3000/metrics
 }

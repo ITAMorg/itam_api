@@ -114,6 +114,11 @@ export const updateTicket = async (id: number, dto: UpdateTicketDto) => {
 
     if (dto.status === $Enums.TicketStatus.IN_PROGRESS) {
       newAssetStatus = $Enums.AssetStatus.MAINTENANCE;
+    } else if (dto.status === $Enums.TicketStatus.OPEN && !wasActive) {
+      newAssetStatus =
+        previous.priority === $Enums.TicketPriority.HIGH
+          ? $Enums.AssetStatus.BROKEN
+          : $Enums.AssetStatus.MAINTENANCE;
     } else if (
       dto.status === $Enums.TicketStatus.RESOLVED ||
       dto.status === $Enums.TicketStatus.CLOSED

@@ -278,7 +278,6 @@ describe('Tickets API', () => {
       expect(response.status).toBe(200);
       expect(response.body.status).toBe('RESOLVED');
       expect(response.body.resolvedAt).not.toBeNull();
-      // resolvedAt doit être une date récente (dans les 5 dernières secondes)
       const resolvedAt = new Date(response.body.resolvedAt).getTime();
       expect(Date.now() - resolvedAt).toBeLessThan(5000);
     });
@@ -308,11 +307,78 @@ describe('Tickets API', () => {
         .set('Authorization', `Bearer ${token}`)
         .send({ status: 'IN_PROGRESS' });
 
-      // Vérification en base : l'asset est passé en MAINTENANCE automatiquement
       const updatedAsset = await prismaTest.asset.findUnique({
         where: { id: asset.id },
       });
       expect(updatedAsset!.status).toBe('MAINTENANCE');
+    });
+
+        it('rouvrir un ticket bas remet l\'asset en MAINTENANCE', async () => {
+      const type = await createTestAssetType();
+      const asset = await createTestAsset({
+        typeId: type.id,
+        status: 'IN_SERVICE',
+      });
+      const requester = await createTestUser({ email: 'req-reopen@test.local' });
+
+      const ticket = await createTestTicket({
+        requesterId: requester.id,
+        assetId: asset.id,
+        status: 'RESOLVED',
+        priority: 'LOW',
+      });
+
+      await createTestUser({
+        email: 'tech-reopen@test.local',
+        password: 'TechPass123',
+        role: 'TECHNICIAN',
+      });
+      const token = await loginAs('tech-reopen@test.local', 'TechPass123');
+
+      await request(app)
+        .patch(`/api/tickets/${ticket.id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ status: 'OPEN' });
+
+      const updatedAsset = await prismaTest.asset.findUnique({
+        where: { id: asset.id },
+      });
+
+      expect(updatedAsset!.status).toBe('MAINTENANCE');
+    });
+
+    it('rouvrir un ticket haut remet l\'asset en BROKEN', async () => {
+      const type = await createTestAssetType();
+      const asset = await createTestAsset({
+        typeId: type.id,
+        status: 'IN_SERVICE',
+      });
+      const requester = await createTestUser({ email: 'req-crit@test.local' });
+
+      const ticket = await createTestTicket({
+        requesterId: requester.id,
+        assetId: asset.id,
+        status: 'CLOSED',
+        priority: 'HIGH',
+      });
+
+      await createTestUser({
+        email: 'tech-crit@test.local',
+        password: 'TechPass123',
+        role: 'TECHNICIAN',
+      });
+      const token = await loginAs('tech-crit@test.local', 'TechPass123');
+
+      await request(app)
+        .patch(`/api/tickets/${ticket.id}`)
+        .set('Authorization', `Bearer ${token}`)
+        .send({ status: 'OPEN' });
+
+      const updatedAsset = await prismaTest.asset.findUnique({
+        where: { id: asset.id },
+      });
+
+      expect(updatedAsset!.status).toBe('BROKEN');
     });
   });
 
